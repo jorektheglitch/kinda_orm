@@ -5,6 +5,30 @@ Lhs = TypeVar("Lhs", contravariant=True)
 Rhs = TypeVar("Rhs", contravariant=True)
 Result = TypeVar("Result", covariant=True)
 
+# Comparisons
+class SupportsEquals(Protocol[Rhs, Result]):
+    def __eq__(self, other: Rhs) -> Result: ...  # type: ignore
+
+
+class SupportsNotEquals(Protocol[Rhs, Result]):
+    def __ne__(self, other: Rhs) -> Result: ...  # type: ignore
+
+
+class SupportsLessThan(Protocol[Rhs, Result]):
+    def __lt__(self, other: Rhs) -> Result: ...
+
+
+class SupportsLessOrEquals(Protocol[Rhs, Result]):
+    def __le__(self, other: Rhs) -> Result: ...
+
+
+class SupportsGreaterOrEquals(Protocol[Rhs, Result]):
+    def __ge__(self, other: Rhs) -> Result: ...
+
+
+class SupportsGreaterThan(Protocol[Rhs, Result]):
+    def __gt__(self, other: Rhs) -> Result: ...
+
 
 # Math
 class SupportsAdd(Protocol[Rhs, Result]):
