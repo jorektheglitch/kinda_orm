@@ -82,3 +82,44 @@ class SupportsReverseFloordiv(Protocol[Rhs, Result]):
 
 class SupportsReverseMod(Protocol[Rhs, Result]):
     def __rmod__(self, other: Rhs) -> Result: ...
+
+
+# Bitwise/boolean operators
+class SupportsAnd(Protocol[Rhs, Result]):
+    def __and__(self, other: Rhs) -> Result: ...
+
+
+class SupportsOr(Protocol[Rhs, Result]):
+    def __or__(self, other: Rhs) -> Result: ...
+
+
+class SupportsXor(Protocol[Rhs, Result]):
+    def __xor__(self, other: Rhs) -> Result: ...
+
+
+class SupportsLShift(Protocol[Rhs, Result]):
+    def __lshift__(self, other: Rhs) -> Result: ...
+
+
+class SupportsRShift(Protocol[Rhs, Result]):
+    def __rshift__(self, other: Rhs) -> Result: ...
+
+
+class SupportsReverseAnd(Protocol[Rhs, Result]):
+    def __rand__(self, other: Rhs) -> Result: ...
+
+
+class SupportsReverseOr(Protocol[Rhs, Result]):
+    def __ror__(self, other: Rhs) -> Result: ...
+
+
+class SupportsReverseXor(Protocol[Rhs, Result]):
+    def __rxor__(self, other: Rhs) -> Result: ...
+
+
+class SupportsReverseLShift(Protocol[Rhs, Result]):
+    def __rlshift__(self, other: Rhs) -> Result: ...
+
+
+class SupportsReverseRShift(Protocol[Rhs, Result]):
+    def __rrshift__(self, other: Rhs) -> Result: ...
