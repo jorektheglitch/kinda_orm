@@ -5,6 +5,10 @@ Lhs = TypeVar("Lhs", contravariant=True)
 Rhs = TypeVar("Rhs", contravariant=True)
 Result = TypeVar("Result", covariant=True)
 
+Index = TypeVar("Index", contravariant=True)
+Item = TypeVar("Item", covariant=True)
+
+
 # Comparisons
 class SupportsEquals(Protocol[Rhs, Result]):
     def __eq__(self, other: Rhs) -> Result: ...  # type: ignore
@@ -147,3 +151,16 @@ class SupportsReverseLShift(Protocol[Rhs, Result]):
 
 class SupportsReverseRShift(Protocol[Rhs, Result]):
     def __rrshift__(self, other: Rhs) -> Result: ...
+
+
+# Sequence/Mapping methods
+class Indexable(Protocol[Index, Item]):
+    def __getitem__(self, index: Index) -> Item: ...
+
+
+class Sliceable(Protocol[Result]):
+    def __getitem__(self, index: slice) -> Result: ...
+
+
+class SupportsIndex(Protocol[Result]):
+    def __index__(self) -> Result: ...
