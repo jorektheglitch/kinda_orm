@@ -303,7 +303,8 @@ class Expr(Generic[T_co]):
     def __index__(self) -> None: ...
 
     @overload
-    def __getitem__(self: Expr[Sliceable[Item]],
+    # NOTE: here two overloads overlaps with different types, but it seems OK
+    def __getitem__(self: Expr[Sliceable[Item]],  # type: ignore
                     index: slice
                     ) -> GetSliceExpr[Item]: ...
 
