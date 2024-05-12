@@ -71,6 +71,18 @@ class SupportsAbs(Protocol[Result]):
     def __abs__(self) -> Result: ...
 
 
+class SupportsPos(Protocol[Result]):
+    def __pos__(self) -> Result: ...
+
+
+class SupportsNeg(Protocol[Result]):
+    def __neg__(self) -> Result: ...
+
+
+class SupportsInvert(Protocol[Result]):
+    def __invert__(self) -> Result: ...
+
+
 class SupportsRound(Protocol[Result]):
     def __round__(self, n: int) -> Result: ...
 
