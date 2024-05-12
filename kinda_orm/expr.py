@@ -6,8 +6,9 @@ from typing import Any, Callable, ClassVar, Generic, ParamSpec, Type, TypeVar, o
 from typing import cast as _cast
 
 from kinda_orm.protocols import (
-    SupportsAbs, SupportsAdd, SupportsAnd, SupportsFloordiv, SupportsLShift, SupportsMatmul, SupportsMod, SupportsMul,
-    SupportsOr, SupportsPower, SupportsRShift, SupportsRound, SupportsSub, SupportsTruediv, SupportsTrunc, SupportsXor,
+    SupportsAbs, SupportsAdd, SupportsAnd, SupportsFloordiv, SupportsInvert, SupportsLShift,
+    SupportsMatmul, SupportsMod, SupportsMul, SupportsNeg, SupportsOr, SupportsPos, SupportsPower, SupportsRShift,
+    SupportsRound, SupportsSub, SupportsTruediv, SupportsTrunc, SupportsXor,
 )
 from kinda_orm.protocols import (
     SupportsReverseAdd, SupportsReverseAnd, SupportsReverseFloordiv, SupportsReverseLShift, SupportsReverseMatmul,
@@ -29,6 +30,12 @@ T_co = TypeVar("T_co", covariant=True)
 
 Params = ParamSpec("Params")
 Return = TypeVar("Return", covariant=True)
+
+
+class UnaryOperator(StrEnum):
+    pos = '+'
+    neg = '-'
+    invert = '~'
 
 
 class BinOperator(StrEnum):
@@ -69,11 +76,14 @@ class Expr(Generic[T_co]):
 
     def __divmod__(self: Expr, other) -> None: ...
 
-    def __pos__(self: Expr) -> None: ...
+    def __pos__(self: Expr[SupportsPos[Result]]) -> Expr[Result]:
+        return PosExpr(self)
 
-    def __neg__(self: Expr) -> None: ...
+    def __neg__(self: Expr[SupportsNeg[Result]]) -> Expr[Result]:
+        return NegExpr(self)
 
-    def __invert__(self) -> None: ...
+    def __invert__(self: Expr[SupportsInvert[Result]]) -> Expr[Result]:
+        return InvertExpr(self)
 
     def __add__(self: Expr[SupportsAdd[Rhs, Result]],
                 other: Expr[Rhs] | Rhs
@@ -386,6 +396,30 @@ class RoundExpr(Expr[Result]):
 @dataclass
 class TruncExpr(Expr[Result]):
     arg: Expr[SupportsTrunc[Result]]
+
+
+@dataclass
+class UnaryExpr(Expr[Result], Generic[Rhs, Result]):
+    arg: Expr[Rhs]
+    operator: ClassVar[UnaryOperator]
+
+    def __str__(self) -> str:
+        return f"{self.operator}{self.arg}"
+
+
+@dataclass
+class PosExpr(UnaryExpr[SupportsPos[Result], Result]):
+    operator = UnaryOperator.pos
+
+
+@dataclass
+class NegExpr(UnaryExpr[SupportsNeg[Result], Result]):
+    operator = UnaryOperator.neg
+
+
+@dataclass
+class InvertExpr(UnaryExpr[SupportsInvert[Result], Result]):
+    operator = UnaryOperator.invert
 
 
 @dataclass
