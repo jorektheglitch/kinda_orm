@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Any, Callable, ClassVar, Generic, ParamSpec, Type, TypeVar, overload
+from typing import Any, Callable, ClassVar, Generic, Mapping, ParamSpec, Type, TypeVar, overload
 from typing import cast as _cast
 
 from kinda_orm.protocols import (
-    SupportsAbs, SupportsAdd, SupportsAnd, SupportsFloordiv, SupportsInvert, SupportsLShift,
+    SupportsAbs, SupportsAdd, SupportsAnd, SupportsDivmod, SupportsFloordiv, SupportsInvert, SupportsLShift,
     SupportsMatmul, SupportsMod, SupportsMul, SupportsNeg, SupportsOr, SupportsPos, SupportsPower, SupportsRShift,
     SupportsRound, SupportsSub, SupportsTruediv, SupportsTrunc, SupportsXor,
 )
@@ -37,6 +37,10 @@ class UnaryOperator(StrEnum):
     neg = '-'
     invert = '~'
 
+    @property
+    def priority(self) -> int:
+        return _OPERATORS_PRIORITIES[self]
+
 
 class BinOperator(StrEnum):
     add = '+'
@@ -58,6 +62,36 @@ class BinOperator(StrEnum):
     le = '<='
     ge = '>='
     gt = '>'
+
+    @property
+    def priority(self) -> int:
+        return _OPERATORS_PRIORITIES[self]
+
+
+_OPERATORS_PRIORITIES: Mapping[BinOperator | UnaryOperator, int] = {
+    BinOperator.pow: 8,
+    UnaryOperator.pos: 7,
+    UnaryOperator.neg: 7,
+    UnaryOperator.invert: 7,
+    BinOperator.mul: 6,
+    BinOperator.matmul: 6,
+    BinOperator.truediv: 6,
+    BinOperator.floordiv: 6,
+    BinOperator.mod: 6,
+    BinOperator.add: 5,
+    BinOperator.sub: 5,
+    BinOperator.lshift: 4,
+    BinOperator.rshift: 4,
+    BinOperator.and_: 3,
+    BinOperator.xor: 2,
+    BinOperator.or_: 1,
+    BinOperator.eq: 0,
+    BinOperator.ne: 0,
+    BinOperator.lt: 0,
+    BinOperator.le: 0,
+    BinOperator.ge: 0,
+    BinOperator.gt: 0,
+}
 
 
 @dataclass
