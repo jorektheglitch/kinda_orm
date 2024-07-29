@@ -63,6 +63,10 @@ class SupportsFloordiv(Protocol[Rhs, Result]):
     def __floordiv__(self, other: Rhs) -> Result: ...
 
 
+class SupportsDivmod(Protocol[Rhs, Result]):
+    def __divmod__(self, other: Rhs, /) -> Result: ...
+
+
 class SupportsMod(Protocol[Rhs, Result]):
     def __mod__(self, other: Rhs) -> Result: ...
 
@@ -118,6 +122,10 @@ class SupportsReverseTruediv(Protocol[Rhs, Result]):
 
 class SupportsReverseFloordiv(Protocol[Rhs, Result]):
     def __rfloordiv__(self, other: Rhs) -> Result: ...
+
+
+class SupportsReverseDivmod(Protocol[Rhs, Result]):
+    def __rdivmod__(self, other: Rhs, /) -> Result: ...
 
 
 class SupportsReverseMod(Protocol[Rhs, Result]):

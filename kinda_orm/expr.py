@@ -11,9 +11,9 @@ from kinda_orm.protocols import (
     SupportsRound, SupportsSub, SupportsTruediv, SupportsTrunc, SupportsXor,
 )
 from kinda_orm.protocols import (
-    SupportsReverseAdd, SupportsReverseAnd, SupportsReverseFloordiv, SupportsReverseLShift, SupportsReverseMatmul,
-    SupportsReverseMod, SupportsReverseMul, SupportsReverseOr, SupportsReversePower, SupportsReverseRShift,
-    SupportsReverseSub, SupportsReverseTruediv, SupportsReverseXor
+    SupportsReverseAdd, SupportsReverseAnd, SupportsReverseDivmod, SupportsReverseFloordiv, SupportsReverseLShift,
+    SupportsReverseMatmul, SupportsReverseMod, SupportsReverseMul, SupportsReverseOr, SupportsReversePower,
+    SupportsReverseRShift, SupportsReverseSub, SupportsReverseTruediv, SupportsReverseXor,
 )
 from kinda_orm.protocols import (
     SupportsEquals, SupportsLessOrEquals,
@@ -108,7 +108,12 @@ class Expr(Generic[T_co]):
     def __trunc__(self: Expr[SupportsTrunc[Result]]) -> Expr[Result]:
         return TruncExpr(self)
 
-    def __divmod__(self: Expr, other) -> None: ...
+    def __divmod__(self: Expr[SupportsDivmod[Rhs, Result]],
+                   other: Expr[Rhs] | Rhs,
+                   ) -> Expr[Result]:
+        if not isinstance(other, Expr):
+            other = ConstExpr(other)
+        return DivmodExpr(self, other)
 
     def __pos__(self: Expr[SupportsPos[Result]]) -> Expr[Result]:
         return PosExpr(self)
@@ -212,7 +217,12 @@ class Expr(Generic[T_co]):
 
     # Reversed math operations
 
-    def __rdivmod__(self: Expr, other) -> None: ...
+    def __rdivmod__(self: Expr[SupportsReverseDivmod[Lhs, Result]],
+                    other: Expr[Lhs] | Lhs
+                    ) -> ReverseDivmodExpr[Lhs, Result]:
+        if not isinstance(other, Expr):
+            other = ConstExpr(other)
+        return ReverseDivmodExpr(other, self)
 
     def __radd__(self: Expr[SupportsReverseAdd[Lhs, Result]],
                  other: Expr[Lhs] | Lhs,
@@ -419,6 +429,18 @@ class CastExpr(Expr[Result]):
 @dataclass
 class AbsExpr(Expr[Result]):
     arg: Expr[SupportsAbs[Result]]
+
+
+@dataclass
+class DivmodExpr(Expr[Result], Generic[Rhs, Result]):
+    left: Expr[SupportsDivmod[Rhs, Result]]
+    right: Expr[Rhs]
+
+
+@dataclass
+class ReverseDivmodExpr(Expr[Result], Generic[Lhs, Result]):
+    left: Expr[Lhs]
+    right: Expr[SupportsReverseDivmod[Lhs, Result]]
 
 
 @dataclass
